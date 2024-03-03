@@ -3,33 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sum Calculator</title>
+  <title>User Data Form</title>
 </head>
 <body>
-  <h2>Sum Calculator</h2>
-  <form id="sumForm">
-    <label for="num1">Number 1:</label>
-    <input type="text" id="num1" name="num1"><br><br>
-    <label for="num2">Number 2:</label>
-    <input type="text" id="num2" name="num2"><br><br>
-    <button type="button" onclick="sumNumbers()">Calculate Sum</button>
+  <h2>User Data Form</h2>
+  <form id="userDataForm">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="id">ID:</label><br>
+    <input type="text" id="id" name="id"><br><br>
+    <button type="submit">Submit</button>
   </form>
-  <div id="result"></div>
 
   <script>
-    function sumNumbers() {
-      const num1 = document.getElementById('num1').value;
-      const num2 = document.getElementById('num2').value;
+    document.getElementById("userDataForm").addEventListener("submit", function(event) {
+      event.preventDefault();
 
-      fetch(`http://localhost:3000/sum/${num1}/${num2}`)
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('result').innerText = data;
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-    }
+      const formData = new FormData(this);
+      const userData = {};
+      formData.forEach(function(value, key){
+        userData[key] = value;
+      });
+
+      fetch('http://localhost:3000/storeUserData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        alert("Data stored successfully!");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Error storing data!");
+      });
+    });
   </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 const express = require('express');
-//add cors
+const bodyParser = require('body-parser');
+const fs = require('fs');
 const cors = require('cors');
 const app = express();
 const port = 3000;
@@ -19,12 +20,26 @@ const corsOptions = {
 //Enable CORS with specific origin
 app.use(cors(corsOptions));
 
-// Route to sum two numbers
-app.get('/sum/:num1/:num2', (req, res) => {
-  const num1 = parseFloat(req.params.num1);
-  const num2 = parseFloat(req.params.num2);
-  const sum = num1 + num2;
-  res.send(`The sum of ${num1} and ${num2} is: ${sum}`);
+app.use(bodyParser.json());
+
+app.post('/storeUserData', (req, res) => {
+  const userData = req.body;
+
+  // Read existing data from JSON file, if any
+  let existingData = [];
+  try {
+    existingData = JSON.parse(fs.readFileSync('userdata.json', 'utf8'));
+  } catch (error) {
+    console.error('Error reading JSON file:', error);
+  }
+
+  // Add new user data to existing data
+  existingData.push(userData);
+
+  // Write updated data back to JSON file
+  fs.writeFileSync('userdata.json', JSON.stringify(existingData));
+
+  res.json({ message: 'Data stored successfully', userData: userData });
 });
 
 app.listen(port, () => {
