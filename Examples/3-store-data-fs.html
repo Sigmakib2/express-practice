@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Data Form</title>
+</head>
+<body>
+  <h2>User Data Form</h2>
+  <form id="userDataForm">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="id">ID:</label><br>
+    <input type="text" id="id" name="id"><br><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    document.getElementById("userDataForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+      const userData = {};
+      formData.forEach(function(value, key){
+        userData[key] = value;
+      });
+
+      fetch('http://localhost:3000/storeUserData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        alert("Data stored successfully!");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Error storing data!");
+      });
+    });
+  </script>
+</body>
+</html>
