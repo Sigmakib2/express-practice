@@ -3,45 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Form</title>
+  <title>Sum Calculator</title>
 </head>
 <body>
-  <h2>Login Form</h2>
-  <form id="loginForm" action="http://localhost:3000/login" method="POST">
-    <label for="username">Username:</label><br>
-    <input type="text" id="username" name="username"><br>
-    <label for="password">Password:</label><br>
-    <input type="password" id="password" name="password"><br><br>
-    <button type="submit">Login</button>
+  <h2>Sum Calculator</h2>
+  <form id="sumForm">
+    <label for="num1">Number 1:</label>
+    <input type="text" id="num1" name="num1"><br><br>
+    <label for="num2">Number 2:</label>
+    <input type="text" id="num2" name="num2"><br><br>
+    <button type="button" onclick="sumNumbers()">Calculate Sum</button>
   </form>
-  <div id="message"></div>
+  <div id="result"></div>
 
   <script>
-    // Prevent default form submission and handle it via JavaScript
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-      event.preventDefault();
+    function sumNumbers() {
+      const num1 = document.getElementById('num1').value;
+      const num2 = document.getElementById('num2').value;
 
-      // Get form data
-      const formData = new FormData(this);
-
-      // Send POST request to server
-      fetch("http://localhost:3000/login", {
-        method: "POST",
-        body: formData
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Invalid username or password");
-        }
-        return response.text();
-      })
-      .then(data => {
-        document.getElementById("message").innerHTML = data;
-      })
-      .catch(error => {
-        document.getElementById("message").innerHTML = error.message;
-      });
-    });
+      fetch(`http://localhost:3000/sum/${num1}/${num2}`)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('result').innerText = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
   </script>
 </body>
 </html>
