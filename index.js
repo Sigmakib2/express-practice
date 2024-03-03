@@ -1,47 +1,23 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const fs = require('fs');
-const cors = require('cors');
 const app = express();
-const port = 3000;
 
-// Specify allowed origin
-const allowedOrigins = ['http://127.0.0.1:5500'];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+// Read the list of fruits from the JSON file
+const fruits = JSON.parse(fs.readFileSync('fruits.json', 'utf-8'));
+
+// Route to check if input is in the list of fruits
+app.get('/check-fruit/:name', (req, res) => {
+  const name = req.params.name.toLowerCase(); // Convert input to lowercase
+  const isInList = fruits.includes(name);
+  if (isInList) {
+    res.json({ message: `${name} is a fruit!` });
+  } else {
+    res.json({ message: `${name} is not a fruit.` });
   }
-};
-
-//Enable CORS with specific origin
-app.use(cors(corsOptions));
-
-app.use(bodyParser.json());
-
-app.post('/storeUserData', (req, res) => {
-  const userData = req.body;
-
-  // Read existing data from JSON file, if any
-  let existingData = [];
-  try {
-    existingData = JSON.parse(fs.readFileSync('userdata.json', 'utf8'));
-  } catch (error) {
-    console.error('Error reading JSON file:', error);
-  }
-
-  // Add new user data to existing data
-  existingData.push(userData);
-
-  // Write updated data back to JSON file
-  fs.writeFileSync('userdata.json', JSON.stringify(existingData));
-
-  res.json({ message: 'Data stored successfully', userData: userData });
 });
 
-app.listen(port, () => {
-  console.log(`Server is listening at http://localhost:${port}`);
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
